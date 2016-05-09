@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>RxJS</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		 <link rel="stylesheet" href="css/overwrites.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+		<link rel="stylesheet" href="vendors/angular-material.min.css">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+
+					<h1>RxJS</h1>
+					<h4>Введение в реактивное программирование</h4>
+					<p>
+						<small>подготовил <a href="">Лазарев Дмитрий</a> / <a href="">dlazarev@ptsecurity.com</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h4>Реактивное программирование</h4>
+					<h3>a = b + c</h3>
+				</section>
+
+				<section>
+					<p>обработка параллельных <span class="fragment highlight-red">потоков данных</span></p>
+			 	</section>
+
+				<section>
+					<img data-src="http://i.imgur.com/cL4MOsS.png">
+				</section>
+
+				<section>
+					<h4>потоки</h4>
+				<div class="layout-row">
+					<div class="flex-50">
+						<span class="fragment">UI events</span><br>
+						<span class="fragment">Requests</span><br>
+						<span class="fragment">Device events</span><br>
+						<span class="fragment">Messages</span><br>
+						<span class="fragment">Hooks</span><br><br>
+
+						<span class="fragment">Array</span><br>
+						<span class="fragment">Set</span><br>
+						<span class="fragment">Map</span><br>
+						<span class="fragment">Object</span><br>
+						<span class="fragment">Everyting</span>
+					</div>
+					<div class="fragment">
+						<img data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/263775/images/1763829/687474703a2f2f692e696d6775722e636f6d2f4149696d5138432e6a7067.jpeg">
+					</div>
+				</div>
+				</section>
+
+				<section>
+					<h4>Чем обрабатывать потоки?</h4><br>
+						<div class="layout-row">
+							<div class="flex-50">
+								<span class="fragment">callbacks</span><br>
+								<span class="fragment">promises</span><br>
+								<span class="fragment">generators</span><br>
+								<span class="fragment">async/await</span><br>
+								<span class="fragment">web workers</span><br>
+								<span class="fragment">web sockets</span><br>
+							</div>
+							<div class="layout-column layout-align-center">
+								<span class="fragment">
+									<p>RxJS</p>
+									<p>Reactive Extensions for Javascript</p>
+								</span>
+							</div>
+					</div>
+				</section>
+
+				<section>
+					<h4>observable sequence | observable</h4>
+					<p>(Observer + Iterator)</p>
+				</section>
+
+				<section>
+					<div class="layout-row">
+						<div class="flex-50">
+							<h3>observer</h3>
+							<p>pull</p>
+						</div>
+						<div class="flex-50">
+							<h3>observable</h3>
+							<p>push</p>
+						</div>
+				</section>
+
+				<section>
+						<p>3 этапа жизни Observable</p>
+				</section>
+
+				<section>
+							<div>Создание
+							<pre><code class="hljs" data-trim contenteditable>
+let source = Rx.Observable.create(observer => {
+	observer.onNext(42);
+	observer.onCompleted();
+
+	return () => console.log('disposed');
+});
+	</code></pre>
+</div>
+
+<div class="fragment">Подписка
+	<pre><code class="hljs" data-trim contenteditable>
+let subscription = source.subscribe(
+	x => console.log('onNext: %s', x),
+	e => console.log('onError: %s', e),
+	() => console.log('onCompleted')
+);
+// => onNext: 42
+// => onCompleted
+</code></pre>
+</div>
+
+<div class="fragment">Отписка
+<pre><code class="hljs" data-trim contenteditable>
+subscription.dispose();
+// => disposed
+</code></pre>
+</div>
+				</section>
+
+				<section>
+					<p>Function ?</p>
+				</section>
+
+				<section>
+			<pre><code class="hljs" data-trim contenteditable>
+func.call()
+
+// Верни мне значение прямо сейчас (синхронно)
+</code></pre>
+
+<pre class="fragment"><code class="hljs" data-trim contenteditable>
+obsv.subscribe()
+
+// Верни мне значение.
+// Возможно несколько значений.
+// Возможно прямо сейчас.
+// Возможно потом как-нибудь
+</code></pre>
+				</section>
+
+				<section>
+					<h3>Observable</h3>
+					<p>функция, которая при вызове возвращает от 0 до бесконечности значений
+						 за промежуток времени от сейчас до бесконечности </p>
+				</section>
+
+				<section>
+						<img data-src="img/compare.png">
+				</section>
+
+				<section>
+						<h4>операторы</h4>
+						<p>Методы Observable, которые позволяют создавать и преобразовывать observables
+				</section>
+
+				<section>
+					<h3>converting</h3>
+							from <br>
+							fromArray<br>
+							fromCallback<br>
+							fromNodeCallback<br>
+							fromEvent<br>
+							fromEventPattern<br>
+							fromPromise<br>
+				</section>
+
+				<section>
+					<h3>filtering</h3>
+							filter <br>
+							map<br>
+							flatMap<br>
+							find<br>
+							first<br>
+							pluck<br>
+							where<br>
+				</section>
+
+				<section>
+					<h3>grouping</h3>
+							merge<br>
+							mergeAll<br>
+							groupBy<br>
+							concat<br>
+							amb<br>
+							zip<br>
+							withLatestFrom<br>
+				</section>
+
+				<section>
+					<h3>buffering strategy</h3>
+							buffer<br>
+							throttle<br>
+							debounce<br>
+							sample<br>
+				</section>
+
+				<section>
+					<h4>Как работает оператор?</h4>
+
+					<pre class="fragment"><code class="js" data-trim contenteditable>
+let result = source.myOperator();
+
+// result - Observable, который преобразует значения source и возвращает их
+					</code></pre>
+
+	 <pre class="fragment"><code class="js" data-trim contenteditable>
+result.subscribe();
+
+// Подписываясь на result - подписываемся и на source
+	 </code></pre>
+
+		<pre class="fragment"><code class="js" data-trim contenteditable>
+result.unsubscribe();
+
+// Отписываясь от result - отписываемся и от source
+		</code></pre>
+				</section>
+
+				<section>
+					более насыщенный пример
+				</section>
+
+				<section>
+					lodash для событий
+				</section>
+
+				<section>
+					Оператор передает каждое обработанное значение следующему оператору до перехода к следующему значению в потоке
+				</section>
+
+				<section>
+
+					<div style="text-align: left;">
+						<h3>hot / cold observable</h3><br>
+							<div>Cold Observable <span class="fragment">(видео)</span></div>
+							<div>Hot Observable <span class="fragment">(живые выступления)</span></div><br>
+							<div>Hot replayed Observable <span class="fragment">(живые выступления на видео)</span></div>
+					</div>
+
+				</section>
+
+				<section>
+					<H4>Когда стоит использовать ?</h4><br>
+					<ul>
+						<li class="fragment">большие массивы данных</li>
+						<li class="fragment">асинхронные потоки данных</li>
+						<li class="fragment"> > 1 асинхронного вычисления</li>
+						<li class="fragment"> > 1 события</li>
+						<li class="fragment">связывание компонет приложения (flux)</li>
+					</ul>
+				</section>
+
+				<section>
+					<p>RxJS 5.0 beta</p>
+				</section>
+
+				<section>
+					<h4>Что-то еще?</h4>
+
+					<div class="fragment">Subject</div>
+					<div class="fragment">Transducers</div>
+					<div class="fragment">Schedulers</div>
+					<div class="fragment">Тестирование</div>
+					<div class="fragment">Отладка</div>
+					<div class="fragment">Обработка ошибок</div>
+					<div class="fragment">Работа с сокетами</div>
+					<div class="fragment">RxJS 5 подробнее</div>
+					<div class="fragment">RxJS as/vs flux</div><br>
+
+					<div class="fragment">что-то еще</div>
+
+				</section>
+
+				<section>
+					<div style="text-align: left;">
+						<p>Полезные ресурсы</p>
+
+						<div><a target="_blank" href="http://reactivex.io/rxjs/">Документация</a></div>
+						<div><a target="_blank" href="https://github.com/Reactive-Extensions">Reactive extensions</a></div>
+						<div><a target="_blank" href="https://github.com/ReactiveX/rxjs/">RxJS 5</a></div>
+						<div><a target="_blank" href="https://github.com/ReactiveX/rxjs/blob/master/MIGRATION.md">Migration from 4 to 5</a></div>
+						<div><a target="_blank" href="http://xgrommx.github.io/rx-book/">RxJS book</a></div>
+						<div><a target="_blank" href="http://rxmarbles.com/">Интерактивные marble-диаграммы</a></div><br>
+
+						<div><a target="_blank" href="#">Эта презентация</a></div>
+						<div><a target="_blank" href="#">RxJS explore</a></div>
+					</div>
+
+				</section>
+
+			</div>
+		</div>
+
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
